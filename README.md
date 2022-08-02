@@ -16,7 +16,7 @@ details on functions in DGGM:
 # - particle_filter: inner component of the algorithm, compute the marg lik and sample the graphs
 # - sample_ChangePoints: outer component, MH for change points
 # - sim.data: simulate data from the model (not used)
-# - simulate_data: simulate data from scenarios described in the Franzolini et al. (2022)
+# - simulate_data: simulate data from scenarios described in Franzolini et al. (2022)
 # - sim.G: sample a graph at time 0 from the prior
 # - sim.N.G: sample N graphs at time 0 from the prior
 # - sim.GG: sample a graph from the prior given the previous graph
