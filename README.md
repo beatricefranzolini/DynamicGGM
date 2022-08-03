@@ -1,5 +1,5 @@
 # DynamicGGM
-Code used for the paper "Change point detection in dynamic Gaussian graphical models: the impact of COVID-19 pandemic on the US stock market"  by B. Franzolini, A. Beskos, M. De Iorio, W. Poklewski Koziell and K. Grzeszkiewicz  arXiv:2208.00952v2
+Code used for the paper "Change point detection in dynamic Gaussian graphical models: the impact of COVID-19 pandemic on the US stock market"  by B. Franzolini, A. Beskos, M. De Iorio, W. Poklewski Koziell and K. Grzeszkiewicz  arXiv:2208.00952v2 , 2022
 
 ## main_to_run.R 
 --> R code to run to reproduce results and simulate data.
