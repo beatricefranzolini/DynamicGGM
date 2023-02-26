@@ -118,6 +118,7 @@ mutate_G <-function(G, Y, z, c, delta, D, phi, previous_graph =  array(0, dim=c(
     prior_old = sum(dbinom(temp2[col>row],1, abs( temp1_prev[col>row]-(2 * z/ (p - 1.0))), log = TRUE ))
     if (lik_old  + prior_old == lik_new + prior_new){diff = 0}else{diff = lik_new - lik_old + prior_new - prior_old }
     if (log(runif(1)) < diff ){
+      G[1 , , ,n] = temp1
     }
   }
   return(G)
