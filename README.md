@@ -24,3 +24,10 @@ details on functions in DGGM:
 - sim.GG: sample a graph from the prior given the previous graph
 - sim.N.GG: sample N graphs from the prior given N previous graphs
 - temperatures_tuning: compute temperatures adaptively
+
+## comparisonGFGL.m
+--> MatLab script to perform comparisons with group-fused graphical lasso (GFGL) of Gibberd and Nelson (2017)
+
+Ref: 
+Gibberd, A. J. and J. D. Nelson (2017). Regularized estimation of piecewise constant Gaussian graphical models:
+The group-fused graphical lasso. Journal of Computational and Graphical Statistics 26, 623–634.
