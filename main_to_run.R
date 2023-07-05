@@ -15,7 +15,7 @@ source("DGGM.R")
 
 set.seed(0)
 #A. select scenario 
-scenario = -1 #1,2,3 -> for simulated data; 
+scenario = 0 #1,2,3,4,5 (corresponding to a,b, 1,2,3) -> for simulated data; 
 #0 -> weekly real data; -1 -> monthly real data 
 
 #B. select replica for simulated data

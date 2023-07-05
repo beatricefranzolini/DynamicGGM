@@ -20,6 +20,8 @@
 # - sim.N.GG: sample N graphs from the prior given N previous graphs
 # - temperatures_tuning: compute temperatures adaptively 
 
+library(ks)
+
 compute_prior <- function(l, Tmax){
   prior = rep(0, floor(Tmax/l))
   combination = rep(0, Tmax)
@@ -118,7 +120,7 @@ mutate_G <-function(G, Y, z, c, delta, D, phi, previous_graph =  array(0, dim=c(
     prior_old = sum(dbinom(temp2[col>row],1, abs( temp1_prev[col>row]-(2 * z/ (p - 1.0))), log = TRUE ))
     if (lik_old  + prior_old == lik_new + prior_new){diff = 0}else{diff = lik_new - lik_old + prior_new - prior_old }
     if (log(runif(1)) < diff ){
-      G[1 , , ,n] = temp1
+      G[1, , , n] = temp1
     }
   }
   return(G)
@@ -285,7 +287,11 @@ sample_ChangePoints<- function (Y, c, freep, log_lik, log_prior, G_old, l, Tmax,
       ploc = exp(- lambda * abs(freetemploc - c[i]))
       freetempglob = detect_free_points(cnew, l, Tmax)
       if (which == 1){
+        if (length(ploc)>1){
         c_star = sample(freetemploc, size = 1, prob = ploc)
+        }else{
+          c_star = freetemploc
+        }
       }else{
         c_star = sample(freetempglob, size = 1)
       }
@@ -373,7 +379,7 @@ sim.data <- function(p, Tau, w, z, delta, D, thres, S=NULL, ind=TRUE) {
 
 
 simulate_data <- function(scenario, replica, seed = 1, Tmax = 200, p = 10){
-  if(scenario == 1){
+  if(scenario == 1){ #scenario A
     #Scenario1 independence and no change points
     #p = 10; Tmax = 200
     G = array(0, dim = c(1, p, p))
@@ -396,7 +402,7 @@ simulate_data <- function(scenario, replica, seed = 1, Tmax = 200, p = 10){
     Y = rmvnorm(Tmax, rep(0,p), Sigma)
     Y = scale(Y)
     
-  }else if(scenario == 2){ 
+  }else if(scenario == 2){ #scenario B
     set.seed(seed)
     #Scenario 2 dependence and no change points
     #p = 10; Tmax = 200
@@ -430,7 +436,7 @@ simulate_data <- function(scenario, replica, seed = 1, Tmax = 200, p = 10){
     Y = rmvnorm(Tmax, rep(0,p), Sigma)
     Y = scale(Y)
     
-  }else if(scenario == 3){
+  }else if(scenario == 3){ #scenario 1
     set.seed(seed)
     #p = 10; Tmax = 200 #dependence and one change points
     #graphs dependency as in Molinari et al.(2020) and Peterson et al.(2015)
@@ -507,10 +513,95 @@ simulate_data <- function(scenario, replica, seed = 1, Tmax = 200, p = 10){
     Y = scale(Y)
     Sigma = list("Sigma1" = Sigma1, "Sigma2" = Sigma2)
     Omega = list("Omega1" = Omega1, "Omega2" = Omega2)
+  }else if(scenario == 4){ #scenario 2
+    set.seed(seed)
+    #p = 10; Tmax = 200 #dependence and one change points
+    #graphs dependency as in Molinari et al.(2020) and Peterson et al.(2015)
+    temp = sim.data(p, Tmax, w=0.8, z=0.4, delta=3, D=diag(p), thres=0.5, S=c(60,100,150), ind=FALSE) 
+    Y = scale(temp$Y)
+    G = temp$G
+    Omega = list("Omega1" = temp$Omega[1,,], "Omega2" = temp$Omega[2,,], 
+                 "Omega3" = temp$Omega[3,,], "Omega4" = temp$Omega[4,,])
+    Sigma = list("Sigma1" = solve(temp$Omega[1,,]), "Sigma2" = solve(temp$Omega[2,,]), 
+                 "Sigma3" = solve(temp$Omega[3,,]), "Sigma4" = solve(temp$Omega[4,,]) )
+    
+    par(mfrow=c(1,4))
+    temp = G[1, , ]
+    temp = (temp + t(temp))
+    plot(graph_from_adjacency_matrix(temp, weighted = TRUE, mode = c("undirected")),
+         edge.width=3, edge.color="black",
+         vertex.color=mycol[11], vertex.size=20,
+         vertex.label.font=2, vertex.label.color="black", vertex.label.cex=1.5,
+         edge.label.font=2, edge.label.cex=1.5,
+         main = "True graph from t=1 to t=59")
+    temp = G[2, , ]
+    temp = (temp + t(temp))
+    plot(graph_from_adjacency_matrix(temp, weighted = TRUE, mode = c("undirected")),
+         edge.width=3, edge.color="black",
+         vertex.color=mycol[11], vertex.size=20,
+         vertex.label.font=2, vertex.label.color="black", vertex.label.cex=1.5,
+         edge.label.font=2, edge.label.cex=1.5,
+         main = "True graph from t=60 to t=99")
+    temp = G[3, , ]
+    temp = (temp + t(temp))
+    plot(graph_from_adjacency_matrix(temp, weighted = TRUE, mode = c("undirected")),
+         edge.width=3, edge.color="black",
+         vertex.color=mycol[11], vertex.size=20,
+         vertex.label.font=2, vertex.label.color="black", vertex.label.cex=1.5,
+         edge.label.font=2, edge.label.cex=1.5,
+         main = "True graph from t=100 to t=149")
+    temp = G[4, , ]
+    temp = (temp + t(temp))
+    plot(graph_from_adjacency_matrix(temp, weighted = TRUE, mode = c("undirected")),
+         edge.width=3, edge.color="black",
+         vertex.color=mycol[11], vertex.size=20,
+         vertex.label.font=2, vertex.label.color="black", vertex.label.cex=1.5,
+         edge.label.font=2, edge.label.cex=1.5,
+         main = "True graph from t=150 to t=200")
+    
+  }else if(scenario == 5){ #scenario 3
+    set.seed(replica-1)
+    temp = sim.data(p, Tmax, w=1.8, z=0.4, delta=3, D=diag(p), thres=0.5, S=NULL, ind=FALSE) 
+    G = temp$G
+    Omega = temp$Omega[1 , ,]
+    Sigma = solve(Omega)
+    temp = G[1, , ]
+    temp = (temp + t(temp))
+    plot(graph_from_adjacency_matrix(temp, weighted = TRUE, mode = c("undirected")),
+         edge.width=3, edge.color="black",
+         vertex.color=mycol[11], vertex.size=20,
+         vertex.label.font=2, vertex.label.color="black", vertex.label.cex=1.5,
+         edge.label.font=2, edge.label.cex=1.5,
+         main = "True graph Scenario 5")
+    Y = matrix(0, ncol = p, nrow = Tmax)
+    Y[1:59,] =  rmvnorm(59, rep(0,p), Sigma)
+    sd = matrix(diag(Sigma)**(1/2), nrow = p, ncol = p)
+    cross_var = sd * t(sd)
+    corr = Sigma/cross_var
+    new_sd = matrix((diag(Sigma))**(1/2)*2, nrow = p, ncol = p)
+    new_cross_var = new_sd * t(new_sd)
+    Sigma_evolv = new_cross_var * corr
+    Y[60:99,] = rmvnorm(40, rep(0,p), Sigma_evolv)
+    A = rep(0.21, p*(p+1)/2)
+    B = rep(0.8, p*(p+1)/2)
+    for (time in 100:Tmax){
+      Sigma_evolv = invvech(A * vech(Y[time-1,] %*% t(Y[time-1,])) + B * vech(Sigma_evolv))
+      Y[time,] = rmvnorm(1, rep(0,p), Sigma_evolv)
+    }
+    Y = scale(Y)
+    data_long = melt(Y)
+    data_long$Variable = as.factor(data_long$Var2)
+    p = ggplot(data_long,                          
+              aes(x = Var1,
+                  y = value,
+                  col = Variable)) +
+        geom_line() + xlab("Time") + 
+           ylab("Returns ") + 
+           theme_classic()+ theme(text = element_text(size = 20, family = "Times"))
+    print(p)
   }
   return(list("Y"= Y, "G" = G, "Omega" = Omega, "Sigma" = Sigma))
 }
-
 sim.G <- function(p, w) {
   G = matrix(rep(0, p*p), ncol=p, nrow=p)
   pB = 2.0 * w / (p - 1.0) # mean no of edges is w*p

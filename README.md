@@ -1,5 +1,5 @@
 # DynamicGGM
-Code used for the paper "Change point detection in dynamic Gaussian graphical models: the impact of COVID-19 pandemic on the US stock market"  by B. Franzolini, A. Beskos, M. De Iorio, W. Poklewski Koziell and K. Grzeszkiewicz  arXiv:2208.00952v2 , 2022
+Code used for the paper "Change point detection in dynamic Gaussian graphical models: the impact of COVID-19 pandemic on the US stock market"  by B. Franzolini, A. Beskos, M. De Iorio, W. Poklewski Koziell and K. Grzeszkiewicz  arXiv:2208.00952v2 , 2023
 
 ## main_to_run.R 
 --> R code to run to reproduce results and simulate data.
@@ -18,7 +18,7 @@ details on functions in DGGM:
 - particle_filter: inner component of the algorithm, compute the marg lik and sample the graphs
 - sample_ChangePoints: outer component, MH for change points
 - sim.data: simulate data from the model (not used in the main code)
-- simulate_data: simulate data from scenarios described in Franzolini et al. (2022)
+- simulate_data: simulate data from scenarios described in Franzolini et al. (2023)
 - sim.G: sample a graph at time 0 from the prior
 - sim.N.G: sample N graphs at time 0 from the prior
 - sim.GG: sample a graph from the prior given the previous graph
